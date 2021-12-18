@@ -100,10 +100,12 @@ public class MainMenu extends Menu {
 
         // Insert into user and customer tables
         QueryUtilityFunctions.insert_into_table(
-                connection, "user_account", new String[]{username, password, first_name, last_name, email});
+                connection, "user_account", new String[]{"string", "string", "string", "string"},
+                new String[]{username, password, first_name, last_name, email});
 
         QueryUtilityFunctions.insert_into_table(
-                connection, "customer", new String[]{username, credit_card_number, billing_postal_code,
+                connection, "customer", new String[]{"string", "string", "string", "string", "string", "string"},
+                new String[]{username, credit_card_number, billing_postal_code,
                 billing_street_address, shipping_postal_code, shipping_street_address});
     }
 
@@ -125,22 +127,29 @@ public class MainMenu extends Menu {
             System.out.print("Country: ");
             String country = scan.nextLine().toLowerCase();
             QueryUtilityFunctions.insert_into_table
-                    (connection, "area", new String[]{postal_code, city, province, country});
+                    (connection, "area", new String[]{"string", "string", "string", "string"},
+                            new String[]{postal_code, city, province, country});
         }
         // Insert into address table, unless tuple already exists
         if (!QueryUtilityFunctions.attributes_in_table(
-                connection, "address", new String[]{"postal_code", "street_address"}, new String[]{postal_code, street_address}))
-            QueryUtilityFunctions.insert_into_table(connection, "address", new String[]{postal_code, street_address});
+                connection, "address", new String[]{"string", "string"},
+                new String[]{"postal_code", "street_address"}, new String[]{postal_code, street_address})) {
+
+            QueryUtilityFunctions.insert_into_table(connection, "address",
+                    new String[]{"string", "string"}, new String[]{postal_code, street_address});
+        }
 
         return new String[]{postal_code, street_address};
     }
 
     public boolean username_taken(String username) throws SQLException {
-        return QueryUtilityFunctions.attribute_in_relation(connection,"user_account", "username", username);
+        return QueryUtilityFunctions.attribute_in_relation(connection,"user_account", "string",
+                "username", username);
     }
 
     public boolean postal_code_in_database(String postal_code) throws SQLException {
-        return QueryUtilityFunctions.attribute_in_relation(connection,"area", "postal_code", postal_code);
+        return QueryUtilityFunctions.attribute_in_relation(connection,"area", "String",
+                "postal_code", postal_code);
     }
 
 }
