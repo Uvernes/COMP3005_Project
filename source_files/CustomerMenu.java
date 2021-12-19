@@ -33,7 +33,7 @@ public class CustomerMenu extends UserMenu {
             else if (choice.equals("4"))
                 break;
             else
-                System.out.println("\nInvalid input... please try again.\n");
+                System.out.println("\nInvalid input... please try again.");
         }
         System.out.println("\nLogging out...\n");
     }
@@ -171,13 +171,18 @@ public class CustomerMenu extends UserMenu {
     /*
     orders
     -------
-    1. (order id) -  Date -  (COMPLETE)
+    1. Order #(order id) |  Date:  | Status:(order_status)
     ...
 
     Options:
     Select number from above to view in detail. Type 'q' to go back.
      */
     public void orders_menu() {
+
+        // Get all orders
+        // Filter out orders that are this users
+        // List. Give option to view an order in more detail. Simply prints it out.
+        // type 'q' to go back
 
     }
 

@@ -11,10 +11,10 @@ public class MainMenu extends Menu {
 
     public void run() throws SQLException {
 
-        System.out.println("Welcome to Look Inna Book!\n");
+        System.out.println("Welcome to Look Inna Book!");
         while (true) {
             System.out.print(
-                    "Main Menu\n"
+                    "\nMain Menu\n"
                             + "---------\n"
                             + "1. Customer Login\n"
                             + "2. Customer Sign up\n"
@@ -33,7 +33,7 @@ public class MainMenu extends Menu {
             else if (choice.equals("4"))
                 break;
             else
-                System.out.println("\nInvalid input... please try again.\n");
+                System.out.println("\nInvalid input... please try again.");
         }
         System.out.println("\nThanks for stopping by!");
     }
@@ -51,7 +51,7 @@ public class MainMenu extends Menu {
                 (new OwnerMenu(connection, username)).run();
         }
         else
-            System.out.println("\nInvalid Credentials... returning to main menu.\n");
+            System.out.println("\nInvalid Credentials... returning to main menu.");
     }
 
     public boolean valid_credentials(String userType, String username, String password) throws SQLException {
@@ -74,7 +74,7 @@ public class MainMenu extends Menu {
         System.out.println("----------------------");
         System.out.print("username: ");
         String username = scan.nextLine().toLowerCase();
-        if (username_taken(username)) {
+        if (QueryUtilityFunctions.username_taken(connection, username)) {
             System.out.println("\nUsername taken... returning to main menu.\n");
             return;
         }
@@ -90,8 +90,8 @@ public class MainMenu extends Menu {
         String credit_card_number = scan.nextLine().toLowerCase();
 
         // Insert into address, area tables as necessary
-        String[] shipping_address = address_registration("billing");
-        String[] billing_address = address_registration("shipping");
+        String[] shipping_address = QueryUtilityFunctions.address_registration(connection, "shipping");
+        String[] billing_address = QueryUtilityFunctions.address_registration(connection, "billing");
 
         String shipping_postal_code = shipping_address[0];
         String shipping_street_address = shipping_address[1];
@@ -100,56 +100,14 @@ public class MainMenu extends Menu {
 
         // Insert into user and customer tables
         QueryUtilityFunctions.insert_into_table(
-                connection, "user_account", new String[]{"string", "string", "string", "string"},
+                connection, "user_account", new String[]{"string", "string", "string", "string", "string"},
                 new String[]{username, password, first_name, last_name, email});
 
         QueryUtilityFunctions.insert_into_table(
                 connection, "customer", new String[]{"string", "string", "string", "string", "string", "string"},
                 new String[]{username, credit_card_number, billing_postal_code,
                 billing_street_address, shipping_postal_code, shipping_street_address});
+
+        System.out.println("\nCustomer account created!");
     }
-
-    public String[] address_registration(String addressType) throws SQLException {
-
-        System.out.println(addressType + " Information");
-        System.out.println("-------------------");
-        System.out.print("Street address: ");
-        String street_address = scan.nextLine().toLowerCase();
-        System.out.print("Postal code: ");
-        String postal_code = scan.nextLine().toLowerCase();
-
-        // Check if billing postal code already in database. If not, ask more questions and insert into area table
-        if (!postal_code_in_database(postal_code)) {
-            System.out.print("City: ");
-            String city = scan.nextLine().toLowerCase();
-            System.out.print("Province/state: ");
-            String province = scan.nextLine().toLowerCase();
-            System.out.print("Country: ");
-            String country = scan.nextLine().toLowerCase();
-            QueryUtilityFunctions.insert_into_table
-                    (connection, "area", new String[]{"string", "string", "string", "string"},
-                            new String[]{postal_code, city, province, country});
-        }
-        // Insert into address table, unless tuple already exists
-        if (!QueryUtilityFunctions.attributes_in_table(
-                connection, "address", new String[]{"string", "string"},
-                new String[]{"postal_code", "street_address"}, new String[]{postal_code, street_address})) {
-
-            QueryUtilityFunctions.insert_into_table(connection, "address",
-                    new String[]{"string", "string"}, new String[]{postal_code, street_address});
-        }
-
-        return new String[]{postal_code, street_address};
-    }
-
-    public boolean username_taken(String username) throws SQLException {
-        return QueryUtilityFunctions.attribute_in_relation(connection,"user_account", "string",
-                "username", username);
-    }
-
-    public boolean postal_code_in_database(String postal_code) throws SQLException {
-        return QueryUtilityFunctions.attribute_in_relation(connection,"area", "String",
-                "postal_code", postal_code);
-    }
-
 }
