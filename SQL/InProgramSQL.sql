@@ -29,7 +29,7 @@ select * from book;
 --For each book written, it gets more information regarding the author(s)
 select * from author, writes where author.id = writes.author_id;
 
------- Queries in OwnerMenu ------
+------ Queries in OwnerMenu ------ 
 
 delete from writes where ISBN = ?;
 
