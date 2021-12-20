@@ -21,7 +21,7 @@ insert into user_account values (?,?,?,?,?);
 insert into customer values (?,?,?,?,?,?);
 
 
-— Queries in UserMenu —-
+-- Queries in UserMenu —-
 
 --This query is used to load in the books table from the database, and then create book objects
 select * from book;
