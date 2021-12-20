@@ -163,7 +163,7 @@ public class OwnerMenu extends UserMenu {
     // and their attributes
     public void print_reports() throws SQLException {
 
-        ResultSet orders_set = QueryUtilityFunctions.get_table(connection, "orders");
+        ResultSet orders_set = QueryUtilityFunctions.get_table(connection, "order_info");
         System.out.println("\nComing soon...\n");
 //        while (orders_set.next()) {
 //            orders.add(new Order(
