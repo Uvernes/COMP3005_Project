@@ -1,0 +1,222 @@
+-- CREATING TABLES --
+
+create table book
+(ISBN varchar(20),
+ title varchar(50),
+ genre varchar(30),
+ publication_year integer,
+ page_count integer,
+ price numeric(5,2),
+ stock integer,
+ primary key (ISBN)
+);
+
+create table author
+(ID serial,
+ first_name varchar(30),
+ last_name varchar(30),
+ primary key (ID)
+);
+
+create table writes
+(author_id integer,
+ ISBN varchar(20),
+ foreign key (author_id) references author,
+ foreign key (ISBN) references book
+);
+
+create table user_account
+(username varchar(30),
+ password varchar(30),
+ first_name varchar(30),
+ last_name varchar(30),
+ email varchar(30),
+ primary key (username)
+);
+
+create table owner
+(username varchar(30),
+ salary numeric(10,2),
+ primary key (username),
+ foreign key (username) references user_account
+);
+
+create table area
+(postal_code varchar(10),
+ city varchar(50),
+ province varchar(50),
+ country varchar(50),
+ primary key (postal_code)
+);
+
+create table address
+(postal_code varchar(10),
+ street_address varchar (100),
+ primary key (postal_code, street_address),
+ foreign key (postal_code) references area
+);
+
+create table basket_item
+(ISBN varchar(20),
+ username varchar(30),
+ quantity integer,
+ primary key (ISBN, username),
+ foreign key (ISBN) references book,
+ foreign key (username) references user_account
+);
+
+create table publisher
+(name varchar(50),
+ email varchar(50),
+ phone_number varchar(20),
+ bank_account_number varchar(30),
+ postal_code varchar(10),
+ street_address varchar(100),
+ primary key (name),
+ foreign key (postal_code, street_address) references address
+);
+
+create table publishes
+(name varchar(30),
+ ISBN varchar(20),
+ sales_percentage numeric(5,2),
+ primary key (name, ISBN),
+ foreign key (name) references publisher,
+ foreign key (ISBN) references book
+);
+
+create table customer
+(username varchar(30),
+ credit_card_number varchar(30),
+ billing_postal_code varchar(10),
+ billing_street_address varchar(100),
+ shipping_postal_code varchar(10),
+ shipping_street_address varchar(100),
+ primary key (username),
+ foreign key (username) references user_account,
+ foreign key (billing_postal_code, billing_street_address) references address(postal_code, street_address),
+ foreign key (shipping_postal_code, shipping_street_address) references address(postal_code, street_address)
+);
+
+create table order_info
+(order_number serial,
+ customer varchar(30),
+ shipping_postal_code varchar(10),
+ shipping_street_address varchar(100),
+ current_postal_code varchar(10),
+ current_street_address varchar(100),
+ order_status varchar(20),
+ date_of_sale varchar(50),
+ warehouse varchar(50), 
+ primary key (order_number),
+ foreign key (customer) references customer(username),
+ foreign key (shipping_postal_code, shipping_street_address) references address(postal_code, street_address),
+ foreign key (current_postal_code, current_street_address) references address(postal_code, street_address)
+);
+
+create table book_order
+(order_number integer,
+ ISBN varchar(20),
+ quantity integer,
+ primary key(order_number, ISBN),
+ foreign key (order_number) references order_info,
+ foreign key (ISBN) references book
+);
+
+-- Inserting values --
+
+insert into user_account
+values
+('uvito5', 'abcde', 'Uvernes', 'Somarriba', 'uv@gmail.com'),
+('majd01', '12345', 'Majd', 'Taweel', 'majd@gmail,com'),
+('leo10', 'goat', 'Lionel', 'Messi', 'messi@gmail.com'),
+('bookworm101', 'read101', 'Billy', 'Jean', 'billyjean@gmail.com');
+
+insert into owner
+values
+('uvito5', 125000),
+('majd01', 125000);
+
+insert into area
+values
+('T2A 1C8', 'Calgary', 'Alberta', 'Canada'),
+('P0R 1L0', 'Thessalon', 'Ontario', 'Canada');
+
+insert into address
+values
+('T2A 1C8', '3536 40th Street'),
+('P0R 1L0', '4846 Nelson Street');
+
+insert into customer
+values
+('leo10', '4716293822574750', 'T2A 1C8', '3536 40th Street', 'T2A 1C8', '3536 40th Street'),
+('bookworm101', '4929865875977775', 'P0R 1L0', '4846 Nelson Street', 'P0R 1L0', '4846 Nelson Street');
+
+insert into book 
+values
+('9780812968255', 'Meditations', 'Philosophy', 1641, 256, 10.41, 15),
+('9781387779833', 'The Enchiridion of Epictetus', 'Philosophy', 1683, 64, 4.99, 20),
+('9780140442106', 'Letters from a Stoic', 'Philosophy', 1969, 256, 19.13, 10),
+('1501142976', 'IT', 'Horror', 2016, 1168, 19.83, 15),
+('1501156705', 'Pet Sematary', 'Horror', 2017, 560, 17.50, 10),
+('0060853980', 'Good Omens', 'Comedy', 2006, 512, 8.99, 15);
+
+insert into author
+values
+(101, 'Marcus', 'Aurelius'),
+(102, 'E.', 'Epictetus'),
+(103, 'Lucius', 'Seneca'),
+(104, 'Stephen', 'King'),
+(105, 'Neil', 'Gaiman'),
+(106, 'Terry', 'Pratchett');
+
+insert into writes
+values
+(101, '9780812968255'),
+(102, '9781387779833'),
+(103, '9780140442106'),
+(104, '1501142976'),
+(104, '1501156705'),
+(105, '0060853980'),
+(106, '0060853980');
+
+insert into area 
+values
+('K7L 4A6', 'Calgary' , 'Alberta','Canada'),
+('L1H 9N2', 'Ottawa', 'Ontario', 'Canada'),
+('K2S 3Q7', 'Vancouver', 'British Columbia', 'Canada'),
+('L2H 9N2', 'Thessalon', 'Ontario', 'Canada');
+
+insert into address
+values
+('K7L 4A6', '180 Ludwig Way'),
+('L1H 9N2', '52 Castanza Avenue'),
+('K2S 3Q7', '42 Sadie Road'),
+('L2H 9N2', '327 Murdock Road');
+
+insert into publisher
+values 
+('Cheesecake Books', 'cheesecake@gmail.com', '55575333', '4716393866582811', 'K7L 4A6', '180 Ludwig Way'),
+('Ponder Inc' , 'ponder@gmail.com', '44474828', '4826275042590670', 'L1H 9N2', '52 Castanza Avenue'),
+('Velma Publishing' , 'velma@gmail.com', '55590440', '4236870342552916', 'K2S 3Q7', '42 Sadie Road');
+
+insert into publishes 
+values
+('Cheesecake Books', '0060853980', 0.20),
+('Ponder Inc', '9780812968255', 0.35),
+('Ponder Inc', '9781387779833', 0.33),
+('Ponder Inc', '9780140442106', 0.40),
+('Velma Publishing', '1501142976', 0.12),
+('Cheesecake Books', '1501156705', 0.20);
+
+insert into order_info
+values
+(11000027, 'bookworm101', 'P0R 1L0', '4846 Nelson Street', 'L2H 9N2', '327 Murdock Road', 'Processing', '12/12/2021', 'Mississauga'),
+(11000078, 'leo10','T2A 1C8', '3536 40th Street', 'T2A 1C8', '3536 40th Street', 'Delivered', '11/11/2021', 'Mississauga');
+
+insert into book_order
+values 
+(11000027, '9780812968255', 2),
+(11000027, '9780140442106', 18),
+(11000027, '9781387779833', 1),
+(11000078, '0060853980', 12);
