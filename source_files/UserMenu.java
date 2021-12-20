@@ -130,5 +130,5 @@ abstract class UserMenu extends Menu {
 
     public String getUsername() { return username; }
     public ArrayList<Book> getBooks() { return books; }
-
+    public void addBook(Book b ) {books.add(b);}
 }
