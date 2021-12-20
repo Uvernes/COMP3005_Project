@@ -19,9 +19,9 @@ Useful notes
 To log in as a pre-existing customer, use:
 username = “leo10” , password = “goat”
 
-To long in as an owner, use:
+To log in as an owner, use:
 username = “uvito5”, password = “abcde”
 
 You may also register as a new customer and then sign into your newly created customer account.
 
-Other note. The order and user relations in the database are called order_info and user_account, respectively. This is since Pg Admin 4 does not allow order or user as table names.
+Other note: The order and user relations in the database are called order_info and user_account, respectively. This is since Pg Admin 4 does not allow order or user as table names.
