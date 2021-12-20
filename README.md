@@ -2,10 +2,9 @@ Instructions for running this program
 
 1) Using PgAdmin 4, create a database called “bookstore_database”
 
-2) create all the tables using the DDL.txt file found on the github link above, in the SQL directory. 
+2) create all the tables using the DDL.txt file found in the SQL directory. 
 
-3) Insert in the initial data for the database using the DML.txt file found on the github link above,
-    in the SQL directory.
+3) Insert in the initial data for the database using the DML.txt file found in the SQL directory.
 
 4) Create a new java project with an empty source file directory. For example. On IntelliJ, this would simply mean creating a new project.
 
