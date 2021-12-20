@@ -19,6 +19,7 @@ abstract class UserMenu extends Menu {
     // IMPLEMENT NEXT
     public void load_books() throws SQLException {
 
+        books.clear();
         ResultSet books_rset = QueryUtilityFunctions.get_table(connection, "book");
         while (books_rset.next()) {
             books.add(new Book(
@@ -116,7 +117,7 @@ abstract class UserMenu extends Menu {
             boolean valid_choice = false;
             for (int i = 0; i < books.size(); i++)
                 if (choice.equals(Integer.toString(i+1))) {
-                    individual_book_menu(books.get(i));
+                    individual_book_menu(books, books.get(i));
                     valid_choice = true;
                     break;
             }
@@ -126,9 +127,9 @@ abstract class UserMenu extends Menu {
     }
 
     public abstract void run() throws SQLException;
-    public abstract void individual_book_menu(Book book) throws SQLException;
+    public abstract void individual_book_menu(ArrayList<Book> searched_books, Book book) throws SQLException;
 
     public String getUsername() { return username; }
     public ArrayList<Book> getBooks() { return books; }
-    public void addBook(Book b ) {books.add(b);}
+    public void addBook(Book b) {books.add(b); }
 }

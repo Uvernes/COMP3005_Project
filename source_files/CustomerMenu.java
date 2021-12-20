@@ -39,7 +39,7 @@ public class CustomerMenu extends UserMenu {
     }
 
     // 1st function
-    public void individual_book_menu(Book book) throws SQLException {
+    public void individual_book_menu(ArrayList<Book> searched_books, Book book) throws SQLException {
 
         // Give option to add book to cart (i.e basket_item table)
 
@@ -85,7 +85,9 @@ public class CustomerMenu extends UserMenu {
         }
         // Update book quantity
         int new_stock = book.getStock() - quantity;
-        // if (new_stock < 10) new_stock = 20;
+        // Analogous to a trigger if the stock gets too low
+        if (new_stock < 10)
+            new_stock = 20;
         String query = "update book set stock = " + Integer.toString(new_stock) + " where ISBN = '" + book.getISBN() + "'";
         connection.prepareStatement(query).executeUpdate();
         book.setStock(new_stock);
@@ -116,19 +118,6 @@ public class CustomerMenu extends UserMenu {
         System.out.println("\nAdded to cart.");
     }
 
-    // 2nd function
-    /*
-    cart
-    -----
-    i. title (author(s))
-    etc.
-
-    Options:
-    1. Complete order
-    2. Clear cart
-    3. Go back
-     */
-    // Show cart . (quantity) title (author)
     public void cart_menu() throws SQLException {
 
         Cart cart = new Cart(connection, getBooks(), getUsername());
@@ -177,12 +166,41 @@ public class CustomerMenu extends UserMenu {
     Options:
     Select number from above to view in detail. Type 'q' to go back.
      */
-    public void orders_menu() {
+    public void orders_menu() throws SQLException {
 
-        // Get all orders
-        // Filter out orders that are this users
-        // List. Give option to view an order in more detail. Simply prints it out.
-        // type 'q' to go back
+        // first get all of the customers orders
+        ArrayList<Order> orders = new ArrayList<>();
+        String query = "select * from order_info where customer = '" + getUsername() + "'";
+        ResultSet rset = connection.prepareStatement(query).executeQuery();
+        while (rset.next()) {
+            orders.add(new Order(rset.getInt(1), rset.getString(2), rset.getString(3),
+                    rset.getString(4), rset.getString(5), rset.getString(6),
+                    rset.getString(7), rset.getString(8), rset.getString(9)));
+        }
+
+        while (true) {
+            System.out.println("\nOrders");
+            System.out.println("------");
+            for (int i = 0; i < orders.size(); i++) {
+                System.out.println(Integer.toString(i + 1) + ". Order #" + orders.get(i).getOrderNumber() +
+                        " (Status: " + orders.get(i).getOrderStatus() + ")");
+            }
+            System.out.println("\nTo view an order in more detail, type in the corresponding number. To go back, type 'q'.");
+            System.out.print("\nYour selection: ");
+            String choice = scan.nextLine();
+            if (choice.equals("q"))
+                break;
+            boolean valid_choice = false;
+            for (int i = 0; i < orders.size(); i++)
+                if (choice.equals(Integer.toString(i+1))) {
+                    System.out.println();
+                    System.out.println(orders.get(i));
+                    valid_choice = true;
+                    break;
+                }
+            if (!valid_choice)
+                System.out.println("\nInvalid input... please try again.\n");
+        }
 
     }
 

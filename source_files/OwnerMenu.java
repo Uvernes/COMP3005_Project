@@ -1,22 +1,15 @@
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.Scanner;
 
 public class OwnerMenu extends UserMenu {
 
-    private int id_count = 107;
-
     private ArrayList<Order> orders;
-
     private int monthly_expenditures = 400;
     private int horror_total;
     private int comedy_total;
     private int phil_total;
     private int total_sales;
-
-    public int increment(){return id_count+=1;}
 
     public OwnerMenu(Connection connection, String username) throws SQLException { super(connection, username); }
 
@@ -25,13 +18,13 @@ public class OwnerMenu extends UserMenu {
 
         while(true){
             System.out.print(
-                "\nOptions\n"
-                    + "-------\n"
-                    + "1. Search books\n"
-                    + "2. Add book\n"
-                    + "3. View reports\n"
-                    + "4. Logout\n\n"
-                    + "Please select an option (type in the corresponding number): "
+                    "\nOptions\n"
+                            + "-------\n"
+                            + "1. Search books\n"
+                            + "2. Add book\n"
+                            + "3. View reports\n"
+                            + "4. Logout\n\n"
+                            + "Please select an option (type in the corresponding number): "
             );
 
             String choice = scan.nextLine();
@@ -40,10 +33,11 @@ public class OwnerMenu extends UserMenu {
                 browse_books_menu();
             else if (choice.equals("2"))
                 add_book();
-            //else if(choice.equals("3"))
+            else if(choice.equals("3"))
+                print_reports();
             else if(choice.equals("4"))
                 break;
-            }
+        }
         System.out.println("\nLogging out...\n");
     }
 
@@ -54,10 +48,9 @@ public class OwnerMenu extends UserMenu {
     publishers is used to transfer a percentage of the sales of books published by these publishers. This percentage
     is variable and changes from one book to another. The owners should have access to reports that show sales
     vs. expenditures, sales per genres, sales per author, etc..
-
     */
     // Overrides abstract method
-    public void individual_book_menu(Book book) throws SQLException{
+    public void individual_book_menu(ArrayList<Book> searched_books, Book book) throws SQLException{
         while(true){
 
             scan = new Scanner(System.in);
@@ -71,9 +64,15 @@ public class OwnerMenu extends UserMenu {
 
             if(choice.equals("1")){
 
-                System.out.print("Removing book from store");
+                System.out.println("\nRemoved book from store.\n");
                 remove_book(book);
-
+                for(Book b: searched_books){
+                    if(b.getISBN().equals(book.getISBN())){
+                        searched_books.remove(b);
+                        break;
+                    }
+                }
+                return;
             }
             else if (choice.equals("2"))
                 return;
@@ -81,6 +80,7 @@ public class OwnerMenu extends UserMenu {
                 System.out.println("\nInvalid input... please try again.\n");
         }
     }
+
     public void remove_book(Book book) throws SQLException{
         //delete book from db
         //delete from writes where isbn = book.isbn
@@ -106,63 +106,69 @@ public class OwnerMenu extends UserMenu {
 
     public void add_book() throws SQLException{
 
-            System.out.print("\nAdding a new book\n");
-            System.out.print("------------------\n");
-            System.out.print("Enter the ISBN number: \n");
-            String isbn = scan.nextLine();
-            
-            System.out.print("Enter the Title: \n");
-            String title = scan.nextLine();
+        System.out.print("\nAdding a new book\n");
+        System.out.print("------------------\n");
+        System.out.print("Enter the ISBN number: ");
+        String isbn = scan.nextLine();
 
-            System.out.print("Enter the Author: \n");
-            String author = scan.nextLine();
-            String[] name = author.split(" ");
-            String first = name[0];
-            String last = name[1];
+        System.out.print("Enter the Title: ");
+        String title = scan.nextLine();
 
-            System.out.print("Enter the Genre: \n");
-            String genre = scan.nextLine();
+        System.out.print("Enter the author's first name: ");
+        String first = scan.nextLine();
+        System.out.print("Enter the author's last name: ");
+        String last = scan.nextLine();
 
-            System.out.print("Enter the Publication Year: \n");
-            int pub_yearS = Integer.parseInt(scan.nextLine());
+        System.out.print("Enter the Genre: ");
+        String genre = scan.nextLine();
 
-            System.out.print("Enter the Page Count: \n");
-            int page_count = Integer.parseInt(scan.nextLine());
+        System.out.print("Enter the Publication Year: ");
+        int pub_yearS = Integer.parseInt(scan.nextLine());
 
-            System.out.print("Enter the Price: \n");
-            float price = Float.parseFloat(scan.nextLine());
+        System.out.print("Enter the Page Count: ");
+        int page_count = Integer.parseInt(scan.nextLine());
 
-            System.out.print("Enter the Available Stock: \n");
-            int stock = Integer.parseInt(scan.nextLine());
+        System.out.print("Enter the Price: ");
+        float price = Float.parseFloat(scan.nextLine());
 
-            System.out.print("Enter the Publisher's Sales Percentage of this book as a decimal: \n");
-            float percentage = Float.parseFloat(scan.nextLine());
+        System.out.print("Enter the Available Stock: ");
+        int stock = Integer.parseInt(scan.nextLine());
 
-            QueryUtilityFunctions.insert_into_table(connection, "book", new String[]{"string","string","string","int","int","float","int"}, new String[]{isbn, title, genre, Integer.toString(pub_yearS), Integer.toString(page_count), Float.toString(price), Integer.toString(stock)} );
+        System.out.print("Enter the Publisher's Sales Percentage of this book as a decimal: ");
+        String percentage = String.format("%.2f", Float.parseFloat(scan.nextLine()));
 
-            QueryUtilityFunctions.insert_into_table(connection, "publishes", new String[]{"string", "string", "float"}, new String[]{"Cheesecake Books", isbn, Float.toString(percentage)});
+        QueryUtilityFunctions.insert_into_table(connection, "book", new String[]{"string","string","string","int","int","float","int"}, new String[]{isbn, title, genre, Integer.toString(pub_yearS), Integer.toString(page_count), Float.toString(price), Integer.toString(stock)} );
 
-            QueryUtilityFunctions.insert_into_table(connection, "author", new String[]{"int", "string", "string"}, new String[]{"108", first, last});
+        QueryUtilityFunctions.insert_into_table(connection, "publishes", new String[]{"string", "string", "float"}, new String[]{"Cheesecake Books", isbn, percentage});
 
-            QueryUtilityFunctions.insert_into_table(connection, "writes", new String[]{"int", "string", "string"}, new String[]{Integer.toString(increment()) , first, last});
+        String query = "insert into author values(default,?,?)";
+        // Note: must get access to the newly added tuple in order to see what the author id is
+        PreparedStatement preparedStatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+        preparedStatement.setString(1,first);
+        preparedStatement.setString(2,last);
+        preparedStatement.executeUpdate();
+        ResultSet rset = preparedStatement.getGeneratedKeys();
+        rset.next();
+        int author_id = rset.getInt(1);
 
-            this.addBook(new Book(isbn, title, genre, pub_yearS,page_count, price, stock));
+        QueryUtilityFunctions.insert_into_table(connection, "writes", new String[]{"int", "string"}, new String[]{Integer.toString(author_id) , isbn});
 
+        this.addBook(new Book(isbn, title, genre, pub_yearS,page_count, price, stock));
+        // Reload books
+        load_books();
     }
 
+    // Did not have time to finish. But did create an Order class, which constitutes some of the work.
+    // For some reports, simply need to load in the Order objects and generate a report, traversing order objects
+    // and their attributes
     public void print_reports() throws SQLException {
 
         ResultSet orders_set = QueryUtilityFunctions.get_table(connection, "orders");
-        while (orders_set.next()) {
-            orders.add(new Order(
-                    orders_set.getInt(1), orders_set.getString(2), orders_set.getString(3), orders_set.getString(4), orders_set.getString(5), orders_set.getString(6), orders_set.getString(7), orders_set.getString(8), orders_set.getString(9)));
-        }
-
-
+        System.out.println("\nComing soon...\n");
+//        while (orders_set.next()) {
+//            orders.add(new Order(
+//                   orders_set.getInt(1), orders_set.getString(2), orders_set.getString(3), orders_set.getString(4), orders_set.getString(5), orders_set.getString(6), orders_set.getString(7), orders_set.getString(8), orders_set.getString(9)));
+//        }
     }
 
-
-
-};
-
-
+}

@@ -1,3 +1,8 @@
+/*
+COMP 3005 - Project Implementation
+By: Majd Taweel (101159849), Uvernes Somarriba (101146733)
+ */
+
 import javax.swing.plaf.nimbus.State;
 import java.util.Scanner;
 import java.sql.*;
